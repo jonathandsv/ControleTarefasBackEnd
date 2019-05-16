@@ -87,9 +87,9 @@ namespace ControleTarefas.Data
             return (result > 0 ? true : false);
         }
 
-        public int GetTarefaIniciada(int id)
+        public int GetTarefaIniciada(int IdTarefa)
         {
-            string select = @"SELECT * FROM InicioTarefas WHERE IdTarefa = @Id ORDER BY Id DESC";
+            string select = @"SELECT TOP 1 * FROM InicioTarefas WHERE IdTarefa = @IdTarefa ORDER BY Id DESC";
             int IdTarefaIniciada = 0;
 
             using (var sqlConnection = new SqlConnection(_connectionString))
@@ -98,7 +98,7 @@ namespace ControleTarefas.Data
 
                 using (var sqlCommand = new SqlCommand(select, sqlConnection))
                 {
-                    sqlCommand.Parameters.Add("@Id", SqlDbType.Int).Value = id;
+                    sqlCommand.Parameters.Add("@IdTarefa", SqlDbType.Int).Value = IdTarefa;
 
                     SqlDataReader reader = sqlCommand.ExecuteReader();
 
@@ -139,9 +139,9 @@ namespace ControleTarefas.Data
             return result > 0 ? true : false;
         }
 
-        public int GetTarefaFinalizada(int id)
+        public int GetTarefaFinalizada(int IdTarefa)
         {
-            string select = @"SELECT * FROM FimTarefas WHERE IdTarefa = @Id ORDER BY Id DESC";
+            string select = @"SELECT TOP 1 * FROM FimTarefas WHERE IdTarefa = @IdTarefa ORDER BY Id DESC";
             int IdTarefaIniciada = 0;
 
             using (var sqlConnection = new SqlConnection(_connectionString))
@@ -150,7 +150,7 @@ namespace ControleTarefas.Data
 
                 using (var sqlCommand = new SqlCommand(select, sqlConnection))
                 {
-                    sqlCommand.Parameters.Add("@Id", SqlDbType.Int).Value = id;
+                    sqlCommand.Parameters.Add("@IdTarefa", SqlDbType.Int).Value = IdTarefa;
 
                     SqlDataReader reader = sqlCommand.ExecuteReader();
 

@@ -7,6 +7,7 @@ using ControleTarefas.Models;
 using Microsoft.Extensions.Configuration;
 using ControleTarefas.Data;
 using Newtonsoft.Json;
+using ControleTarefas.ViewModels;
 
 namespace ControleTarefas.Controllers
 {
@@ -25,8 +26,11 @@ namespace ControleTarefas.Controllers
         public JsonResult Get()
         {
             var tarefas = new TarefaBO(_config.GetConnectionString("DefaultConnection")).GetTarefas();
+
+            TarefasVM tarefasVM = new TarefasVM();
+            tarefasVM.Tarefas = tarefas;
             
-            return new JsonResult(tarefas);
+            return new JsonResult(tarefasVM);
         }
 
         // GET api/values/5
@@ -89,6 +93,7 @@ namespace ControleTarefas.Controllers
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
         {
+            var teste = "";
         }
 
         // DELETE api/values/5
