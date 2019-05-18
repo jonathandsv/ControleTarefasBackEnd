@@ -49,10 +49,10 @@ namespace ControleTarefas.Data
                 {
                     SqlDataReader reader = sqlCommand.ExecuteReader();
 
-                    Tarefa tarefa = new Tarefa();
 
                     while (reader.Read())
                     {
+                        Tarefa tarefa = new Tarefa();
                         tarefa.Id = Convert.ToInt32(reader["Id"]);
                         tarefa.Nome = reader["Nome"].ToString();
                         tarefas.Add(tarefa);
@@ -221,6 +221,70 @@ namespace ControleTarefas.Data
 
                 throw ex;
             }
+        }
+
+        public async Task<List<Tarefa>> GetTarefasEmAndamento()
+        {
+            string select = @"SELECT IT.Id, IT.dataHora, T.Nome from InicioTarefas as IT 
+                                inner join SessaoTarefas as ST on IT.Id = ST.IdInicioTarefas 
+                                and ST.Ativo = 1 inner join Tarefas as T 
+                                on T.Id = IT.IdTarefa";
+
+            List<Tarefa> tarefas = new List<Tarefa>();
+
+            using (var sqlConnection = new SqlConnection(_connectionString))
+            {
+                sqlConnection.Open();
+
+                using (var sqlCommand = new SqlCommand(select, sqlConnection))
+                {
+                    SqlDataReader reader = await sqlCommand.ExecuteReaderAsync();
+
+                    while (reader.Read())
+                    {
+                        Tarefa tarefa = new Tarefa();
+
+                        tarefa.Id = Convert.ToInt32(reader["Id"]);
+                        tarefa.Nome = reader["Nome"].ToString();
+                        tarefa.dataHora = Convert.ToDateTime(reader["dataHora"]);
+                        tarefas.Add(tarefa);
+                    }
+                }
+            }
+            return tarefas;
+        }
+
+        public async Task<List<TarefaFinalizada>> GetTarefasFinalizadas()
+        {
+            string select = @"SELECT ST.Ativo, T.Nome, IT.dataHora AS DataIniciada, FT.dataHora AS DataFinalizada FROM SessaoTarefas AS ST 
+                                INNER JOIN InicioTarefas AS IT ON ST.IdInicioTarefas = IT.Id AND ST.Ativo = 0
+                                INNER JOIN FimTarefas AS FT ON FT.Id = ST.IdFimTarefas
+                                INNER JOIN Tarefas AS T ON IT.IdTarefa = T.Id
+                                WHERE Ativo = 0 ";
+
+            List<TarefaFinalizada> tarefas = new List<TarefaFinalizada>();
+
+            using (var sqlConnection = new SqlConnection(_connectionString))
+            {
+                sqlConnection.Open();
+
+                using (var sqlCommand = new SqlCommand(select, sqlConnection))
+                {
+                    SqlDataReader reader = await sqlCommand.ExecuteReaderAsync();
+
+                    while (reader.Read())
+                    {
+                        TarefaFinalizada tarefa = new TarefaFinalizada();
+
+                        tarefa.Ativo = Convert.ToInt32(reader["Ativo"]);
+                        tarefa.Nome = reader["Nome"].ToString();
+                        tarefa.DataIniciada = Convert.ToDateTime(reader["DataIniciada"]);
+                        tarefa.DataFinalizada = Convert.ToDateTime(reader["DataFinalizada"]);
+                        tarefas.Add(tarefa);
+                    }
+                }
+            }
+            return tarefas;
         }
     }
 }

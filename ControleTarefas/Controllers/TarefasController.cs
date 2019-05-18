@@ -29,7 +29,7 @@ namespace ControleTarefas.Controllers
 
             TarefasVM tarefasVM = new TarefasVM();
             tarefasVM.Tarefas = tarefas;
-            
+
             return new JsonResult(tarefasVM);
         }
 
@@ -61,7 +61,7 @@ namespace ControleTarefas.Controllers
                     return Ok("Tarefa Iniciada!");
                 else
                     return BadRequest("Erro ao iniciar tarefa!");
-                
+
             }
             catch (Exception)
             {
@@ -86,6 +86,50 @@ namespace ControleTarefas.Controllers
             catch (Exception)
             {
                 return BadRequest("Problema ao finalizar Tarefa!");
+            }
+        }
+
+        [HttpGet]
+        [Route("MostrarTarefasIniciadas")]
+        public async Task<ActionResult<Tarefa>> MostrarTarefasIniciadas()
+        {
+            try
+            {
+                var tarefas = new TarefaBO(_config.GetConnectionString("DefaultConnection"));
+                var tarefaslista = await tarefas.GetTarefasEmAndamento();
+                if (tarefaslista != null)
+                {
+                    return new JsonResult(tarefaslista);
+                }
+                else
+                    return BadRequest("Não tem nenhuma tarefa iniciada!");
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(@"Ocorreu um erro" + ex.Message + "");
+            }
+        }
+
+        [HttpGet]
+        [Route("MostrarTarefasFinalizadas")]
+        public async Task<ActionResult<TarefaFinalizada>> MostrarTarefasFinalizadas()
+        {
+            try
+            {
+                var tarefas = new TarefaBO(_config.GetConnectionString("DefaultConnection"));
+                var tarefaslista = await tarefas.GetTarefasFinalizadas();
+                if (tarefaslista != null)
+                {
+                    return new JsonResult(tarefaslista);
+                }
+                else
+                    return BadRequest("Não tem nenhuma tarefa Finalizada!");
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(@"Ocorreu um erro" + ex.Message + "");
             }
         }
 
